@@ -17,7 +17,7 @@ class ESP8266 {
         void displayConnectInfo();
         void clientDemo();
         void serverSetup();
-        void serverDemo();
+        void serverDemo(int[4]);
         void errorLoop(int);
         void serialTrigger(String);
 };

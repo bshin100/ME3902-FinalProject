@@ -44,6 +44,18 @@ void turnOffLEDs() {
     digitalWrite(RED_LED_PIN, LOW);
 }
 
+// Global for sending data out 
+int wifiData[4];
+
+// Polls newest data from sensors and formats it as a 4-element int array
+int* updateWebData(int values[4]) {
+    values[0] = (int) thermistor.getTempF();
+    values[1] = (int) ultrasonic.getDistance();
+    values[2] = (int) airTemp.getAirTempF();
+    values[3] = (int) airTemp.getHumidity();
+    return values;
+} 
+
 // Logic for the state machine
 void stateController() {
     static States previousState = MONITOR;
@@ -210,7 +222,8 @@ void loop() {
     ultrasonic.loop();
     thermistor.loop();
     airTemp.loop();
-    if(wifiEnabled) wifi.loop();
+
+    if(wifiEnabled) wifi.serverDemo(updateWebData(wifiData));
 
     if(!paused) stateController();
     //delay(250);
