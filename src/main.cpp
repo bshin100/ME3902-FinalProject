@@ -2,6 +2,7 @@
 #include "Ultrasonic.h"
 #include "Thermistor.h"
 #include "AirTemp.h"
+#include "ESP8266.h"
 
 // ## CONFIGURATION ## //
 #define RELAY_W_PIN 5                   // Water Pump Relay
@@ -24,6 +25,7 @@ const bool bypassWaterLevel = false;
 Ultrasonic ultrasonic;
 Thermistor thermistor;
 AirTemp airTemp;
+ESP8266 wifi;
 
 // Define enumerations for system states
 enum States { MONITOR, TEMP_ALARM, WATER_ALARM, AWAIT_CONFIRM, WATER_PUMP } state;
@@ -183,6 +185,7 @@ void setup() {
     ultrasonic.setup();
     thermistor.setup();
     airTemp.setup();
+    wifi.setup();
 
     pinMode(RELAY_W_PIN, OUTPUT);
     pinMode(RELAY_H_PIN, OUTPUT);
@@ -197,7 +200,7 @@ void setup() {
     digitalWrite(RELAY_H_PIN, HIGH); // High turns off the NC outlet and turns on the NO outlets
     digitalWrite(RELAY_W_PIN, HIGH);
 
-    delay(5000); // Delay program for 5 seconds to mitigate startup glitchiness
+    delay(2000); // Delay program for 2 seconds to mitigate startup glitchiness
     Serial.println("Starting program!");
     state = MONITOR;
 }
@@ -206,6 +209,7 @@ void loop() {
     ultrasonic.loop();
     thermistor.loop();
     airTemp.loop();
+    wifi.loop();
 
     if(!paused) stateController();
     delay(250);
