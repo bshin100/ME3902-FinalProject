@@ -1,7 +1,7 @@
 #include "Thermistor.h"
 
 // Instantiate median filter
-MedianFilter tempFilter;
+//MedianFilter tempFilter;
 
 // Instantiate ADC
 Adafruit_ADS1115 ads;
@@ -15,7 +15,7 @@ float a5 = -0.927; float a4 = 11; float a3 = -50.9;
 float a2 = 117; float a1 = -154; float a0 = 138;
 
 void Thermistor::setup() {
-    tempFilter.Init();
+    //tempFilter.Init();
     ads.begin(0x48);
     ads.setGain(GAIN_ONE);
 }
@@ -48,5 +48,6 @@ float Thermistor::getTempF() {
  * @return Filtered temperature in degrees Celsius. 
  */
 float Thermistor::getTempFiltered() {
-    return tempFilter.Filter(getTemp());
+    //return tempFilter.Filter(getTemp());
+    return 0.0;
 }

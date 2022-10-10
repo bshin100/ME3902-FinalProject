@@ -213,7 +213,7 @@ void ESP8266::serverDemo()
   // available() has one parameter -- a timeout value. This
   // is the number of milliseconds the function waits,
   // checking for a connection.
-  ESP8266Client client = server.available(500);
+  ESP8266Client client = server.available((uint8_t) 500);
   
   if (client) 
   {
@@ -266,6 +266,8 @@ void ESP8266::serverDemo()
     client.stop();
     Serial.println(F("Client disconnected"));
   }
+
+  //Serial.println(F("meep"));
   
 }
 

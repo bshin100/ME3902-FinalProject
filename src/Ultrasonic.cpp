@@ -6,7 +6,7 @@ static unsigned long roundTripTime;
 static unsigned long pingTimer;    
 
 // Instantiate median filter
-MedianFilter ultraFilter;
+//MedianFilter ultraFilter;
 
 /**
  * Interrupt service routine for the echo pin
@@ -28,7 +28,7 @@ void Ultrasonic::setup() {
     pinMode(ECHO_PIN, INPUT);
     attachInterrupt(digitalPinToInterrupt(ECHO_PIN), ultrasonicISR, CHANGE);
 
-    ultraFilter.Init();
+    //ultraFilter.Init();
 }
 
 void Ultrasonic::loop() {
@@ -61,5 +61,6 @@ float Ultrasonic::getDistance() {
  * @return Detected distance in CM. 
  */
 float Ultrasonic::getDistanceFiltered() {
-    return ultraFilter.Filter(getDistance());
+    //return ultraFilter.Filter(getDistance());
+    return 0.0;
 }

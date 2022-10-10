@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Median_filter.h"
+//#include "Median_filter.h"
 
 #pragma once
 
@@ -12,6 +12,4 @@ class Ultrasonic {
         void loop();
         float getDistance();
         float getDistanceFiltered();
-    private:
-        float distanceOutput = 0;
 };

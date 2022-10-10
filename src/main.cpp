@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <avr/pgmspace.h>
 #include "Ultrasonic.h"
 #include "Thermistor.h"
 #include "AirTemp.h"
@@ -30,7 +31,7 @@ ESP8266 wifi;
 
 // Define enumerations for system states
 enum States { MONITOR, TEMP_ALARM, WATER_ALARM, AWAIT_CONFIRM, WATER_PUMP } state;
-const char *stateNames[] = {"MONITOR", "TEMP_ALARM", "WATER_ALARM", "AWAIT_CONFIRM", "WATER_PUMP"};
+//const char *stateNames[] = {"MONITOR", "TEMP_ALARM", "WATER_ALARM", "AWAIT_CONFIRM", "WATER_PUMP"};
 
 bool paused = false;
 bool tempAlarmReset = false;
@@ -47,13 +48,13 @@ void turnOffLEDs() {
 void stateController() {
     static States previousState = MONITOR;
     if (state != previousState) {
-        Serial.println(stateNames[state]);
+        //Serial.println(stateNames[state]);
         previousState = state;
     }
 
     switch (state) {
         case MONITOR:
-            Serial.println(thermistor.getTempF());
+            //Serial.println(thermistor.getTempF());
             //Serial.println(ultrasonic.getDistance());
             //Serial.print("Air Temp: "); Serial.println(airTemp.getAirTempF());
             //Serial.print("Humidity: "); Serial.println(airTemp.getHumidity());
@@ -91,7 +92,7 @@ void stateController() {
         case TEMP_ALARM:
             digitalWrite(RELAY_H_PIN, LOW); // LOW turns off NO outlets and turns on the NC outlet
             Serial.print(F("Water temperature is too hot! Current temperature: "));
-            Serial.print(thermistor.getTempF()); Serial.println(" F. Turning heater off!");
+            Serial.print(thermistor.getTempF()); Serial.println(F(" F. Turning heater off!"));
             tempAlarmReset = false;
 
             // Status LED Red
@@ -165,8 +166,6 @@ void stateController() {
                 delta = currTime - startTime;
             }
 
-            Serial.println(delta);
-
             // FIXME: Keep pump on until water level reached without crashing the program
             digitalWrite(RELAY_W_PIN, HIGH); // Turn off water pump
             digitalWrite(YELLOW_LED_PIN, LOW);
@@ -207,7 +206,7 @@ void setup() {
 }
 
 void loop() {
-    Serial.println(F("Top Loop"));
+    //Serial.println(F("Top Loop"));
     ultrasonic.loop();
     thermistor.loop();
     airTemp.loop();
