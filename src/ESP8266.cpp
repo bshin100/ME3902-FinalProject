@@ -55,7 +55,7 @@ void ESP8266::setup()
   // Serial Monitor is used to control the demo and view
   // debug information.
   //Serial.begin(9600);
-  serialTrigger(F("Press any key to begin."));
+  //serialTrigger(F("Press any key to begin."));
 
   // initializeESP8266() verifies communication with the WiFi
   // shield, and sets it up.
@@ -68,10 +68,10 @@ void ESP8266::setup()
   // and the network it's connected to.
   displayConnectInfo();
 
-  serialTrigger(F("Press any key to connect client."));
+  //serialTrigger(F("Press any key to connect client."));
   clientDemo();
   
-  serialTrigger(F("Press any key to test server."));
+  //serialTrigger(F("Press any key to test server."));
   serverSetup();
 }
 
@@ -187,7 +187,7 @@ void ESP8266::clientDemo()
   // available() will return the number of characters
   // currently in the receive buffer.
   while (client.available())
-    Serial.write(client.read()); // read() gets the FIFO char
+    //Serial.write(client.read()); // read() gets the FIFO char
   
   // connected() is a boolean return value - 1 if the 
   // connection is active, 0 if it's closed.

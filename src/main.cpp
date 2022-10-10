@@ -19,6 +19,7 @@ const float TEMP_UPPER_THRESH = 85.0;   // Water temperature upper boundary (too
 const float TEMP_LOWER_THRESH = 25.0;   // Water temperature lower boundary (too cold!), deg F
 
 const bool bypassWaterLevel = false;
+const bool wifiEnabled = true;
 // ## CONFIG END ## //
 
 // Instantiate our sensors
@@ -52,7 +53,7 @@ void stateController() {
 
     switch (state) {
         case MONITOR:
-            //Serial.println(thermistor.getTempF());
+            Serial.println(thermistor.getTempF());
             //Serial.println(ultrasonic.getDistance());
             //Serial.print("Air Temp: "); Serial.println(airTemp.getAirTempF());
             //Serial.print("Humidity: "); Serial.println(airTemp.getHumidity());
@@ -73,15 +74,15 @@ void stateController() {
             // Check if water temperature is too high or too low
             // TODO: Implement 1 minute buffer/moving average?
             if (thermistor.getTempF() > TEMP_UPPER_THRESH && !tempAlarmReset) {
-                Serial.println("Water temperature is too hot. Entering alarm state.");
+                Serial.println(F("Water temperature is too hot. Entering alarm state."));
                 state = TEMP_ALARM;
             } else if (thermistor.getTempF() < TEMP_LOWER_THRESH) {
-                Serial.println("Water temperature is too cold. No action taken.");
+                Serial.println(F("Water temperature is too cold. No action taken."));
             }
 
             // Check if water level is too low, and disregard erroneous readings
             if (ultrasonic.getDistance() > WATER_THRESH && ultrasonic.getDistance() < WATER_THRESH_MAX && !bypassWaterLevel) {
-                Serial.println("Water level is too low. Entering alarm state.");
+                Serial.println(F("Water level is too low. Entering alarm state."));
                 state = WATER_ALARM;
             }
         break;
@@ -89,7 +90,7 @@ void stateController() {
         // Immediately turn off heater relay and alarm user
         case TEMP_ALARM:
             digitalWrite(RELAY_H_PIN, LOW); // LOW turns off NO outlets and turns on the NC outlet
-            Serial.print("Water temperature is too hot! Current temperature: ");
+            Serial.print(F("Water temperature is too hot! Current temperature: "));
             Serial.print(thermistor.getTempF()); Serial.println(" F. Turning heater off!");
             tempAlarmReset = false;
 
@@ -99,7 +100,7 @@ void stateController() {
 
             silenceButton = digitalRead(SILENCE_BUTTON);
             if(silenceButton == HIGH) {
-                Serial.println("Silencing temperature alarm. Returning to MONITOR.");
+                Serial.println(F("Silencing temperature alarm. Returning to MONITOR."));
                 tempAlarmReset = true;
                 state = MONITOR;
             }
@@ -107,7 +108,7 @@ void stateController() {
         break;
 
         case WATER_ALARM:
-            Serial.println("Water level is too low! Confirm refill or silence.");
+            Serial.println(F("Water level is too low! Confirm refill or silence."));
 
             // Status LED Yellow
             turnOffLEDs();
@@ -119,7 +120,7 @@ void stateController() {
 
         // Await user confirmation before activating water pump
         case AWAIT_CONFIRM:
-            Serial.println("Awaiting user confirmation to refill tank.");
+            Serial.println(F("Awaiting user confirmation to refill tank."));
             // static int tempCount1 = 0;
             // if(tempCount1 == 0) {
             //     Serial.println("Awaiting user confirmation to refill tank.");
@@ -130,11 +131,11 @@ void stateController() {
             silenceButton = digitalRead(SILENCE_BUTTON);
             actionButton = digitalRead(ACTION_BUTTON);
             if(silenceButton == HIGH) {
-                Serial.println("Silencing water level alarm. Returning to MONITOR.");
+                Serial.println(F("Silencing water level alarm. Returning to MONITOR."));
                 state = MONITOR;
             }
             if(actionButton == HIGH) {
-                Serial.println("Beginning refill of the tank.");
+                Serial.println(F("Beginning refill of the tank."));
                 state = WATER_PUMP;
             }
             // TODO: poll input from  webserver
@@ -152,7 +153,7 @@ void stateController() {
             // Keep on pumpin', minimum 5 seconds.
             while (/*ultrasonic.getDistance() > WATER_THRESH && ultrasonic.getDistance() < WATER_THRESH_MAX &&*/ delta < 5000.0) {
                 ultrasonic.loop(); // Keep pinging sensor
-                Serial.print("Filling tank. Current water level: ");
+                Serial.print(F("Filling tank. Current water level: "));
                 Serial.println(ultrasonic.getDistance());
 
                 digitalWrite(YELLOW_LED_PIN, LOW); // Blink yellow LED while filling
@@ -169,7 +170,7 @@ void stateController() {
             // FIXME: Keep pump on until water level reached without crashing the program
             digitalWrite(RELAY_W_PIN, HIGH); // Turn off water pump
             digitalWrite(YELLOW_LED_PIN, LOW);
-            Serial.println("Water level reached. Returning to MONTIOR in 2 seconds.");
+            Serial.println(F("Water level reached. Returning to MONTIOR in 2 seconds."));
 
             delay(2000); // Wait 2 seconds to settle
             state = MONITOR;
@@ -185,7 +186,7 @@ void setup() {
     ultrasonic.setup();
     thermistor.setup();
     airTemp.setup();
-    wifi.setup();
+    if(wifiEnabled) wifi.setup();
 
     pinMode(RELAY_W_PIN, OUTPUT);
     pinMode(RELAY_H_PIN, OUTPUT);
@@ -201,16 +202,17 @@ void setup() {
     digitalWrite(RELAY_W_PIN, HIGH);
 
     delay(2000); // Delay program for 2 seconds to mitigate startup glitchiness
-    Serial.println("Starting program!");
+    Serial.println(F("Starting program!"));
     state = MONITOR;
 }
 
 void loop() {
+    Serial.println(F("Top Loop"));
     ultrasonic.loop();
     thermistor.loop();
     airTemp.loop();
-    wifi.loop();
+    if(wifiEnabled) wifi.loop();
 
     if(!paused) stateController();
-    delay(250);
+    //delay(250);
 }
