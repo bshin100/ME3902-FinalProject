@@ -36,7 +36,6 @@ ESP8266 wifi;
 enum States { MONITOR, TEMP_ALARM, WATER_ALARM, AWAIT_CONFIRM, WATER_PUMP } state;
 //const char *stateNames[] = {"MONITOR", "TEMP_ALARM", "WATER_ALARM", "AWAIT_CONFIRM", "WATER_PUMP"};
 
-bool paused = false;
 bool tempAlarmReset = false;
 int silenceButton = 0;
 int actionButton = 0;
@@ -88,7 +87,6 @@ void stateController() {
             }
 
             // Check if water temperature is too high or too low
-            // TODO: Implement 1 minute buffer/moving average?
             if (thermistor.getTempF() > TEMP_UPPER_THRESH && !tempAlarmReset) {
                 Serial.println(F("Water temperature is too hot. Entering alarm state."));
                 state = TEMP_ALARM;
@@ -132,19 +130,12 @@ void stateController() {
             turnOffLEDs();
             digitalWrite(YELLOW_LED_PIN, HIGH);
 
-            // TODO: Silence button to return to MONITOR state
             state = AWAIT_CONFIRM;
         break;
 
         // Await user confirmation before activating water pump
         case AWAIT_CONFIRM:
             Serial.println(F("Awaiting user confirmation to refill tank."));
-            // static int tempCount1 = 0;
-            // if(tempCount1 == 0) {
-            //     Serial.println("Awaiting user confirmation to refill tank.");
-            //     //paused = true;
-            //     tempCount1++;
-            // }
             
             silenceButton = digitalRead(SILENCE_BUTTON);
             actionButton = digitalRead(ACTION_BUTTON);
@@ -157,9 +148,6 @@ void stateController() {
                 Serial.println(F("Beginning refill of the tank."));
                 state = WATER_PUMP;
             }
-            // TODO: poll input from  webserver
-            //if(!paused) state = WATER_PUMP;+
-            //state = WATER_PUMP;
         break;
 
         // Pump water until water level is reached
@@ -232,6 +220,6 @@ void loop() {
 
     if(wifiEnabled) wifi.serverDemo(updateWebData(wifiData));
 
-    if(!paused) stateController();
+    stateController();
     //delay(250);
 }
