@@ -9,18 +9,21 @@
 #define RELAY_W_PIN 5                   // Water Pump Relay
 #define RELAY_H_PIN 6                   // Heater Relay
 #define SILENCE_BUTTON 7                // HW Silence Button
-#define ACTION_BUTTON 1                 // HW Action Button
+#define ACTION_BUTTON 10                // HW Action Button
 #define GREEN_LED_PIN 11                // Green LED
 #define YELLOW_LED_PIN 12               // Yellow LED
 #define RED_LED_PIN 13                  // Red LED
+#define SPEAKER_PIN A0
 
-const float WATER_THRESH = 10.0;        // Water height threshold - values > this triggers refill
-const float WATER_THRESH_MAX = 30.0;    // Maximum distance to water
-const float TEMP_UPPER_THRESH = 85.0;   // Water temperature upper boundary (too hot!), deg F
-const float TEMP_LOWER_THRESH = 25.0;   // Water temperature lower boundary (too cold!), deg F
+#define WATER_THRESH 10.0F        // Water height threshold - values > this triggers refill
+#define WATER_THRESH_MAX 30.0F    // Maximum distance to water
+#define TEMP_UPPER_THRESH 85.0F   // Water temperature upper boundary (too hot!), deg F
+#define TEMP_LOWER_THRESH 25.0F   // Water temperature lower boundary (too cold!), deg F
 
+// Debugging
 const bool bypassWaterLevel = false;
 const bool wifiEnabled = true;
+
 // ## CONFIG END ## //
 
 // Instantiate our sensors
@@ -51,8 +54,8 @@ int wifiData[4];
 int* updateWebData(int values[4]) {
     values[0] = (int) thermistor.getTempF();
     values[1] = (int) ultrasonic.getDistance();
-    values[2] = (int) airTemp.getAirTempF();
-    values[3] = (int) airTemp.getHumidity();
+    values[2] = airTemp.getAirTempF();
+    values[3] = airTemp.getHumidity();
     return values;
 } 
 
@@ -94,7 +97,7 @@ void stateController() {
             }
 
             // Check if water level is too low, and disregard erroneous readings
-            if (ultrasonic.getDistance() > WATER_THRESH && ultrasonic.getDistance() < WATER_THRESH_MAX && !bypassWaterLevel) {
+            if ((ultrasonic.getDistance() > WATER_THRESH) && (ultrasonic.getDistance() < WATER_THRESH_MAX) && !bypassWaterLevel) {
                 Serial.println(F("Water level is too low. Entering alarm state."));
                 state = WATER_ALARM;
             }
@@ -110,10 +113,12 @@ void stateController() {
             // Status LED Red
             turnOffLEDs();
             digitalWrite(RED_LED_PIN, HIGH);
+            tone(SPEAKER_PIN, 3520); // A7
 
             silenceButton = digitalRead(SILENCE_BUTTON);
             if(silenceButton == HIGH) {
                 Serial.println(F("Silencing temperature alarm. Returning to MONITOR."));
+                noTone(SPEAKER_PIN);
                 tempAlarmReset = true;
                 state = MONITOR;
             }
@@ -143,6 +148,7 @@ void stateController() {
             
             silenceButton = digitalRead(SILENCE_BUTTON);
             actionButton = digitalRead(ACTION_BUTTON);
+            Serial.println(digitalRead(ACTION_BUTTON));
             if(silenceButton == HIGH) {
                 Serial.println(F("Silencing water level alarm. Returning to MONITOR."));
                 state = MONITOR;
@@ -206,6 +212,7 @@ void setup() {
     pinMode(GREEN_LED_PIN, OUTPUT);
     pinMode(YELLOW_LED_PIN, OUTPUT);
     pinMode(RED_LED_PIN, OUTPUT);
+    pinMode(SPEAKER_PIN, OUTPUT);
 
     // Make sure our devices start at the right state on startup
     turnOffLEDs();

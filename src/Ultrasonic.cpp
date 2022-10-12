@@ -52,7 +52,7 @@ float Ultrasonic::getDistance() {
     cli();
     rt = roundTripTime;
     sei();
-    float distance = (rt * 0.0343) / 2.0;
+    distance = (rt * 0.0343) / 2.0;
     return distance;
 }
 

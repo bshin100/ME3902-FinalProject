@@ -8,11 +8,11 @@ Adafruit_ADS1115 ads;
 int16_t rawADCvalue;
 
 float Vmid, TC_Reg;
-float voltMax = 4.096;
+const float voltMax = 4.096;
 
 // 5th Order Polynomial Regression Coefficients
-float a5 = -0.927; float a4 = 11; float a3 = -50.9;
-float a2 = 117; float a1 = -154; float a0 = 138;
+const float a5 = -0.927; const int a4 = 11; const float a3 = -50.9;
+const int a2 = 117; const int a1 = -154; const int a0 = 138;
 
 void Thermistor::setup() {
     //tempFilter.Init();

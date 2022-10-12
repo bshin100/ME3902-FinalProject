@@ -22,8 +22,8 @@ Distributed as-is; no warranty is given.
 //////////////////////////////
 // Replace these two character strings with the name and
 // password of your WiFi network.
-const char mySSID[] = "TKE ZM";
-const char myPSK[] = "ZetaMu1959!";
+const char mySSID[] PROGMEM = "TKE ZM";
+const char myPSK[] PROGMEM = "ZetaMu1959!";
 
 //////////////////////////////
 // ESP8266Server definition //
@@ -36,7 +36,7 @@ ESP8266Server server = ESP8266Server(80);
 //////////////////
 // HTTP Strings //
 //////////////////
-const char destServer[] = "example.com";
+const char destServer[] PROGMEM = "example.com";
 const String htmlHeader = "HTTP/1.1 200 OK\r\n"
                           "Content-Type: text/html\r\n"
                           "Connection: close\r\n\r\n"
@@ -278,7 +278,7 @@ void ESP8266::serverDemo(int inputData[4])
         Serial.println(F("Client disconnected"));
     }
 
-     Serial.println(F("meep"));
+     Serial.println(F("\r"));
 }
 
 // errorLoop prints an error code, then loops forever.

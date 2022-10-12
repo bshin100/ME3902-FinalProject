@@ -12,4 +12,6 @@ class Ultrasonic {
         void loop();
         float getDistance();
         float getDistanceFiltered();
+    private:
+        float distance = 0;
 };

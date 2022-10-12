@@ -9,31 +9,21 @@ void AirTemp::setup() {
 
 void AirTemp::loop() {
     // Store previous valid data since this sensor is slow
-    if (!isnan(tempC) || !isnan(tempF) || !isnan(humidity)) {
-        lastTC = tempC;
+    if (!isnan(tempF) || !isnan(humidity)) {
         lastTF = tempF;
         lastHumidity = humidity;
     }
 
     // Poll for new values
-    tempC = dht.readTemperature();
     tempF = dht.readTemperature(true);
     humidity = dht.readHumidity();
 }
 
 /**
  * Return the temperature as read from the DHT11.
- * @return Detected temperature in degrees Celsius.
- */
-float AirTemp::getAirTemp() {
-    return isnan(tempC) ? lastTC : tempC;
-}
-
-/**
- * Return the temperature as read from the DHT11.
  * @return Detected temperature in degrees Fahrenheit.
  */
-float AirTemp::getAirTempF() {
+int AirTemp::getAirTempF() {
     return isnan(tempF) ? lastTF : tempF;
 }
 
@@ -41,6 +31,6 @@ float AirTemp::getAirTempF() {
  * Return the humidity as read from the DHT11.
  * @return Detected humidity percentage. 
  */
-float AirTemp::getHumidity() {
+int AirTemp::getHumidity() {
     return isnan(humidity) ? lastHumidity : humidity;
 }

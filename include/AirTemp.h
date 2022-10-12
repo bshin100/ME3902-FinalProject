@@ -11,10 +11,9 @@ class AirTemp {
     public:
         void setup();
         void loop();
-        float getAirTemp();
-        float getAirTempF();
-        float getHumidity();
+        int getAirTempF();
+        int getHumidity();
     private:
-        float tempC, tempF, humidity;
-        float lastTC, lastTF, lastHumidity;
+        int tempF, humidity;
+        int lastTF, lastHumidity;
 };
